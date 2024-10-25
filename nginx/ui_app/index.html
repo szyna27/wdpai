@@ -4,29 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GET and POST Requests</title>
-    <script src="./requests_async.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script type="text/javascript" src="logic.js"></script>
 </head>
 <body>
-    <h1>Send GET and POST Requests</h1>
+    <div class="container">
+        <div class="form-container">
+            <div class="title">
+                Let's level up your brand, together
+            </div>
+            <form action="" id="myform">
+                <div class="form-group">
+                    <label for="fname" class="label">First name</label>
+                    <input type="text" id="fname" name="fname" class="input" placeholder="First name" required>
 
-    <!-- Form for GET Request -->
-    <h2>GET Request</h2>
-    <label for="getInputField">Enter path for GET request:</label>
-    <input type="text" id="getInputField" placeholder="Enter path for GET request">
-    <button onclick="sendGetRequest()">Send GET Request</button>
+                    <label for="lname" class="label">Last name</label>
+                    <input type="text" id="lname" name="lname" class="input" placeholder="Last name" required>
 
-    <h3>GET Response:</h3>
-    <pre id="getResponse"></pre>
+                    <label for="role" class="label">Role</label>
+                    <input type="text" id="role" name="role" class="input" placeholder="Role" required>
 
-    <hr>
-
-    <!-- Form for POST Request -->
-    <h2>POST Request</h2>
-    <label for="postNameField">Enter name for POST request:</label>
-    <input type="text" id="postNameField" placeholder="Enter name for POST request">
-    <button onclick="sendPostRequest()">Send POST Request</button>
-
-    <h3>POST Response:</h3>
-    <pre id="postResponse"></pre>
+                    <input type="checkbox" id="agree" name="agree" class="checkbox" required>
+                    <div class="checkbox-text">You agree to our friendly <a href="">privacy policy</a>.</div>
+                    <button type="submit" class="submit">SUBMIT</button>
+                </div>
+            </form>
+        </div>
+        <div class="response-container">
+            <!-- Responses will be inserted here -->
+        </div>
+    </div>
 </body>
 </html>

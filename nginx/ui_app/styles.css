@@ -1,0 +1,128 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Trebuchet MS", "Helvetica", sans-serif;
+    background-color: #f9f9f9;
+}
+
+.form-container {
+    max-width: 400px;
+    margin: 1% auto;
+    padding: 20px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    text-align: center;
+    display: block;
+    width: 100%;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.form-container form {
+    width: 100%;
+}
+
+.input {
+    width: 94%;
+    margin-bottom: 4%;
+    margin-top: 1%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #66069e;
+    box-shadow: 0 0 5px rgba(102, 6, 158, 0.5);
+}
+
+.checkbox {
+    appearance: none;
+    display: inline-block;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.checkbox:checked {
+    background-color: #66069e;
+    border-color: #66069e;
+}
+
+.checkbox-text {
+    display: inline-block;
+    margin-left: 5px;
+    position: relative;
+    top: -8px;
+}
+
+.submit {
+    width: 100%;
+    padding: 10px;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    border: 0;
+    border-radius: 5px;
+    background-color: #66069e;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.submit:hover {
+    background-color: #944ebd;
+}
+
+.response-container {
+    max-width: 420px;
+    margin: 1% auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.response-item {
+    width: 100%;
+    height: 45px;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    column-gap: 150px;
+    flex-wrap: wrap;
+}
+
+.response-fullname {
+    font-weight: bold;
+    margin-bottom: 5px;
+    width: 55%;
+}
+
+.response-role {
+    color: #aaaaaa;
+}
+
+.delete-img {
+    cursor: pointer;
+    position: relative;
+    top: 10px;
+}
