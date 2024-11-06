@@ -1,11 +1,12 @@
-function newDiv(responseData) {
+function newDiv(data) {
     let responseContainer = document.querySelector('.response-container');
     // Create repsonse item
     let response_item = document.createElement('div');
     response_item.classList.add('response-item');
+    response_item.id = data['id'];
     // Create response fullname
     let response_fullname = document.createElement('div');
-    response_fullname.textContent = responseData['fname'] + ' ' + responseData['lname'];
+    response_fullname.textContent = data['first_name'] + ' ' + data['last_name'];
     response_fullname.classList.add('response-fullname');
     response_item.appendChild(response_fullname);
     // Create delete img
@@ -13,14 +14,14 @@ function newDiv(responseData) {
     delete_img.src = 'delete.png';
     delete_img.classList.add('delete-img');
     delete_img.addEventListener('click', () => {
-        if (sendDeleteRequest(responseData)){
+        if (sendDeleteRequest(data)){
             response_item.remove();
         }
     });
     response_item.appendChild(delete_img);
     // Create response role
     let response_role = document.createElement('div');
-    response_role.textContent = responseData['role'];
+    response_role.textContent = data['role'];
     response_role.classList.add('response-role');
     response_item.appendChild(response_role);
     // Append response item to response container
@@ -53,7 +54,7 @@ async function sendPostRequest(data) {
         console.log(niggas);
         console.log(niggas == 'User added successfully')
         if (niggas == 'User added successfully'){
-            newDiv(responseData);
+            newDiv(data);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -89,8 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
             console.log('myform submission started');
             const data = { 
-                fname: document.getElementById('fname').value, 
-                lname: document.getElementById('lname').value,
+                first_name: document.getElementById('first_name').value, 
+                last_name: document.getElementById('last_name').value,
                 role: document.getElementById('role').value
             };
             sendPostRequest(data);

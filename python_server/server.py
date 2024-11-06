@@ -1,17 +1,78 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Type
+import psycopg2
+import os
+import time
 
+
+DB_HOST = os.environ.get('DB_HOST', 'postgres')
+DB_PORT = int(os.environ.get('DB_PORT', 5432))
+DB_NAME = os.environ.get('DB_NAME', 'mydatabase')
+DB_USER = os.environ.get('DB_USER', 'myuser')
+DB_PASSWORD = os.environ.get('DB_PASSWORD', 'mypassword')
+
+
+def connect_to_db():
+    while True:
+        try:
+            conn = psycopg2.connect(
+                host=DB_HOST,
+                port=DB_PORT,
+                dbname=DB_NAME,
+                user=DB_USER,
+                password=DB_PASSWORD
+            )
+            print("Połączono z bazą danych")
+            return conn
+        except psycopg2.OperationalError:
+            print("Błąd połączenia z bazą danych, ponawianie za 5 sekund...")
+            time.sleep(5)
+
+def select_all_users(conn):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users")
+        response = []
+        for user in cursor:
+            response.append({
+                'id': user[0],
+                'first_name': user[1],
+                'last_name': user[2],
+                'role': user[3]
+            })
+        conn.commit()
+        return response
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        conn.rollback()
+        return []
+    
+def insert_user(conn, user):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO users (first_name, last_name, role) VALUES (%s, %s, %s)", (user['first_name'], user['last_name'], user['role']))
+        conn.commit()
+        return True
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        conn.rollback()
+        return False
+    
+def delete_user(conn, user_id):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+        conn.commit()
+        return True
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        conn.rollback()
+        return False
 
 # Define the request handler class by extending BaseHTTPRequestHandler.
 # This class will handle HTTP requests that the server receives.
 class SimpleRequestHandler(BaseHTTPRequestHandler):
-
-    user_list = [{
-        'fname': 'Michal',
-        'lname': 'Mucha',
-        'role': 'instructor'
-    }]
 
     # Handle OPTIONS requests (used in CORS preflight checks).
     # CORS (Cross-Origin Resource Sharing) is a mechanism that allows restricted resources
@@ -48,9 +109,8 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
         # Finish sending headers
         self.end_headers()
 
-        # Prepare the response data, which will be returned in JSON format.
-        response: list
-        response = self.user_list
+        # Prepare the response data, which will be returned in JSON format
+        response = select_all_users(connect_to_db())
 
         # Convert the response dictionary to a JSON string and send it back to the client.
         # `self.wfile.write()` is used to send the response body.
@@ -70,17 +130,18 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
         # We expect the POST request body to contain JSON-formatted data.
         received_data: dict = json.loads(post_data.decode())
 
-        # Prepare the response data.
-        response: dict = {
-            "message": "User added successfully",
-            "fname": received_data['fname'],
-            "lname": received_data['lname'],
-            "role": received_data['role']
-        }
+        if insert_user(connect_to_db(), received_data):
+            response: dict = {
+                "message": "User added successfully",
+            }
+            self.send_response(200)
+        else:
+            response: dict = {
+                "message": "Error while adding user",
+            }
+            self.send_response(400)
 
         # Send the response headers.
-        # Set the status to 200 OK and indicate the response content will be in JSON format.
-        self.send_response(200)
         self.send_header('Content-type', 'application/json')
 
         # Again, allow any origin to access this resource (CORS header).
@@ -91,15 +152,6 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
 
         # Convert the response dictionary to a JSON string and send it back to the client.
         self.wfile.write(json.dumps(response).encode())
-
-        element: dict =  {
-            "fname": received_data['fname'],
-            "lname": received_data['lname'],
-            "role": received_data['role']
-        }
-
-        # Append the response data to variable
-        self.user_list.append(element)
 
     # Handle DELETE requests.
     # This method is called when the client sends a DELETE request.
@@ -115,14 +167,21 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
         # We expect the DELETE request body to contain JSON-formatted data.
         received_data: dict = json.loads(post_data.decode())
 
+        id = received_data['id']
+
         # Prepare the response data.
-        response: dict = {
-            "message": "User deleted successfully",
-        }
+        if delete_user(connect_to_db(), id):
+            response: dict = {
+                "message": "User deleted successfully",
+            }
+            self.send_response(200)
+        else:
+            response: dict = {
+                "message": "Error while deleting user",
+            }
+            self.send_response(400)
 
         # Send the response headers.
-        # Set the status to 200 OK and indicate the response content will be in JSON format.
-        self.send_response(200)
         self.send_header('Content-type', 'application/json')
 
         # Again, allow any origin to access this resource (CORS header).
@@ -133,15 +192,6 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
 
         # Convert the response dictionary to a JSON string and send it back to the client.
         self.wfile.write(json.dumps(response).encode())
-
-        element: dict =  {
-            "fname": received_data['fname'],
-            "lname": received_data['lname'],
-            "role": received_data['role']
-        }
-
-        # Remove the response data from variable
-        self.user_list.remove(element)
 
 # Function to start the server.
 # It takes parameters to specify the server class, handler class, and port number.
